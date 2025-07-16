@@ -1,0 +1,101 @@
+﻿<GlobalChangeSpec
+  xmlns="bb_appfx_globalchange"
+  xmlns:c="bb_appfx_commontypes"
+  ID="07F58E17-0C93-45BA-B887-6EB147DCE176"
+  Name="HFHI CRM Model Score Cleanup"
+  Description="Ends older ADMA and SIMIO model score entries on a constituent when duplicates exist. Also ensures future updates apply a new start date and end the previous score."
+  Author="HFHCON-DEV\twillis"
+  DisplayName="HFHI CRM Model Score Cleanup"
+  GlobalChangeFolder="HFHI CRM Model Score Maintenance"
+  SPName="USR_USP_GLOBALCHANGE_HFHI_CRM_MODELSCORECU_v2"
+>
+
+	<CreateProcedureSQL>
+		<![CDATA[
+CREATE PROCEDURE dbo.USR_USP_GLOBALCHANGE_HFHI_CRM_MODELSCORECU_v2
+(
+    @CHANGEAGENTID UNIQUEIDENTIFIER = NULL,
+    @ASOF DATETIME = NULL,
+    @NUMBERADDED INT = 0 OUTPUT,
+    @NUMBEREDITED INT = 0 OUTPUT,
+    @NUMBERDELETED INT = 0 OUTPUT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Ensure ASOF is set
+    IF @ASOF IS NULL
+        SET @ASOF = GETDATE();
+
+    -- Use ASOF to define current date
+    DECLARE @CURRENTDATE DATETIME = @ASOF;
+
+    DECLARE @ADMA_ATTRIBUTEID UNIQUEIDENTIFIER = 'C14E9665-8FC5-44E0-933F-4DF1FA74CA6B';
+
+    IF @CHANGEAGENTID IS NULL
+        EXEC dbo.USP_CHANGEAGENT_GETORCREATECHANGEAGENT @CHANGEAGENTID OUTPUT;
+
+    IF OBJECT_ID('tempdb..#PERSONAPRIORITY') IS NOT NULL DROP TABLE #PERSONAPRIORITY;
+
+    CREATE TABLE #PERSONAPRIORITY (
+        VALUE NVARCHAR(100),
+        PRIORITY INT
+    );
+
+    INSERT INTO #PERSONAPRIORITY (VALUE, PRIORITY)
+    VALUES
+        ('World Changers', 1),
+        ('Movers + Shakers', 2),
+        ('Busy Bees', 3),
+        ('Happy-Go-Luckies', 4),
+        ('Easy Goers', 5),
+        ('Solid Citizens', 6),
+        ('Everyday People', 7);
+
+    WITH SCORES AS (
+        SELECT 
+            A.ID,
+            A.CONSTITUENTID,
+            A.VALUE,
+            A.DATEADDED,
+            A.STARTDATE,
+            A.ENDDATE,
+            ROW_NUMBER() OVER (
+                PARTITION BY A.CONSTITUENTID, A.ATTRIBUTETYPEID
+                ORDER BY ISNULL(P.PRIORITY, 99), A.DATEADDED DESC
+            ) AS RN
+        FROM dbo.ATTRIBUTE A
+        LEFT JOIN #PERSONAPRIORITY P ON A.VALUE = P.VALUE
+        WHERE A.ATTRIBUTETYPEID = @ADMA_ATTRIBUTEID
+            AND A.ENDDATE IS NULL
+    )
+
+    UPDATE A
+    SET 
+        A.ENDDATE = @CURRENTDATE,
+        A.CHANGEDBYID = @CHANGEAGENTID
+    FROM dbo.ATTRIBUTE A
+    INNER JOIN SCORES S ON A.ID = S.ID
+    WHERE S.RN > 1;
+
+    SET @NUMBEREDITED = @@ROWCOUNT;
+END
+
+    ]]>
+	</CreateProcedureSQL>
+
+<!--	<ParametersFormMetaData>
+		<FormMetaData xmlns="bb_appfx_commontypes">
+			<FormFields>
+				<FormField
+				  FieldID="ASOF"
+				  Caption="As of Date"
+				  DataType="Date"
+				  Required="true"
+        />
+			</FormFields>
+		</FormMetaData>
+	</ParametersFormMetaData>
+-->
+</GlobalChangeSpec>
