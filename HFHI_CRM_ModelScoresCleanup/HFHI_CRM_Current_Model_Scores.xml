@@ -1,0 +1,45 @@
+﻿<DataListSpec 
+	xmlns="bb_appfx_datalist"
+	xmlns:common="bb_appfx_commontypes" 
+	ID="b33359b1-4c9e-4df6-809d-ec98b755d076" 
+	Name= "HFHI Current Model Scores Only (ADMA and SIMIO)"
+	Description="A data list showing hfhi crm current model scores records." 
+	Author="HFHCON-DEV\twillis"
+	DataListType="Constituent"
+	>
+
+	<common:Categories>
+		<common:Category>Constituent</common:Category>
+		<common:Category>HFHI</common:Category>
+		<common:Category>Model Scores</common:Category>
+	</common:Categories>
+
+	<common:MetaTags>
+		<common:MetaTag>HFHI</common:MetaTag>
+		<common:MetaTag>Modeling</common:MetaTag>
+	</common:MetaTags>
+
+	<Output>
+		<OutputFields>
+			<OutputField Name="ModelScoreType" Caption="Model Score Type" />
+			<OutputField Name="Value" Caption="Score Value" />
+			<OutputField Name="StartDate" Caption="Start Date" />
+		</OutputFields>
+	</Output>
+
+	<Parameters>
+		<common:FormMetaData>
+			<common:FormFields>
+				<common:FormField FieldID="CONSTITUENTID" Caption="Constituent ID" DataType="Guid" Required="true" />
+			</common:FormFields>
+		</common:FormMetaData>
+	</Parameters>
+
+	<DataListSQL>
+		<![CDATA[
+      exec dbo.USP_DATALIST_HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT @CONSTITUENTID = @CONSTITUENTID
+    ]]>
+	</DataListSQL>
+
+
+</DataListSpec>
