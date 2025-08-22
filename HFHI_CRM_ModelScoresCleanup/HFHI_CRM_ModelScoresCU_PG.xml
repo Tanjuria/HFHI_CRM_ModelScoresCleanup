@@ -1,7 +1,7 @@
 <PackageSpec 
     xmlns="bb_appfx_package"
     xmlns:c="bb_appfx_commontypes"
-    ID="af60886f-576a-47af-a9ec-5dcd6ea3ffb0"
+    ID="52b1fed3-1ba6-4820-ac36-63315c115126"
     Name="HFHI CRM ModelScoresCU PG Package"
     Description="A package defining specs related to hfhi crm modelscorescu pg records"
     Author="HFHCON-DEV\twillis"
@@ -57,6 +57,7 @@
 	-->
 	
 	<c:DependencyList>
+        <c:Dependency CatalogAssembly="HFHI_CRM_ModelScoresCleanup.dll" CatalogItem="HFHI_CRM_ModelScoresCleanup.HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT.xml" />
         <c:Dependency CatalogAssembly="HFHI_CRM_ModelScoresCleanup.dll" CatalogItem="HFHI_CRM_ModelScoresCleanup.HFHI_CRM_ModelScoreCU_v2.xml" />
     </c:DependencyList>
 

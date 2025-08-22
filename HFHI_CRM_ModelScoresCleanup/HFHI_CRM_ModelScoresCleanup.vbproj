@@ -87,16 +87,10 @@
     <EmbeddedResource Include="HFHI_CRM_ModelScoreCU_v2.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HFHI_CRM_ModelScoresCU_PG.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="HFHI_CRM_ModelScores_All.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="HFHI_CRM_Current_Model_Scores.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HFHI_CRM_ModelScoresCU_PG.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

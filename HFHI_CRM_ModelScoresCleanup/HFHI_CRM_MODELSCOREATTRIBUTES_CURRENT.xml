@@ -8,67 +8,66 @@
 
 
 	<SPDataList SPName="USR_USP_DATALIST_HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT">
-		<CreateProcedureSQL xmlns="bb_appfx_commontypes">
-			
-CREATE PROCEDURE dbo.USP_DATALIST_HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT
-    @CONSTITUENTID UNIQUEIDENTIFIER
+		<CreateProcedureSQL  xmlns="bb_appfx_commontypes">
+			<![CDATA[
+CREATE PROCEDURE dbo.USR_USP_DATALIST_HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT
+      @CONSTITUENTID UNIQUEIDENTIFIER
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Return only model scores with ENDDATE IS NULL
     SELECT
         'ADMA - Propensity to Give' AS ModelScoreType,
         ATTRADMA.[VALUE] AS [Value],
-        ATTRADMA.[STARTDATE] AS [StartDate]
+        ATTRADMA.[STARTDATE] AS [StartDate],
+        ATTRADMA.[ENDDATE] AS [EndDate]   -- NEW
     FROM dbo.ATTRIBUTED1DBE44C8F734152BDED6C3723A96873 ATTRADMA
     INNER JOIN dbo.MODELINGANDPROPENSITY MP_ADMA
         ON ATTRADMA.MODELINGANDPROPENSITYID = MP_ADMA.ID
     WHERE
         MP_ADMA.ID = @CONSTITUENTID
-        AND ATTRADMA.ENDDATE IS NULL
 
     UNION ALL
 
     SELECT
         'SIMIO - Mid-Level Propensity' AS ModelScoreType,
         ATTRMID.[VALUE],
-        ATTRMID.[STARTDATE]
+        ATTRMID.[STARTDATE],
+        ATTRMID.[ENDDATE]                 -- NEW
     FROM dbo.ATTRIBUTE628D8C79C5354CDEBA04853FF4D1129C ATTRMID
     INNER JOIN dbo.MODELINGANDPROPENSITY MP_MID
         ON ATTRMID.MODELINGANDPROPENSITYID = MP_MID.ID
     WHERE
         MP_MID.ID = @CONSTITUENTID
-        AND ATTRMID.ENDDATE IS NULL
 
     UNION ALL
 
     SELECT
         'SIMIO - Net Worth Propensity' AS ModelScoreType,
-        ATTRNW.[VALUE],
-        ATTRNW.[STARTDATE]
+        NULL AS VALUE,                    -- placeholder as in your version
+        ATTRNW.[STARTDATE],
+        ATTRNW.[ENDDATE]                  -- NEW
     FROM dbo.ATTRIBUTE992C22EE8AF24ABF8E6AEF796C9EFFBB ATTRNW
     INNER JOIN dbo.MODELINGANDPROPENSITY MP_NW
         ON ATTRNW.MODELINGANDPROPENSITYID = MP_NW.ID
     WHERE
         MP_NW.ID = @CONSTITUENTID
-        AND ATTRNW.ENDDATE IS NULL
 
     UNION ALL
 
     SELECT
         'SIMIO - Planned Giving Propensity' AS ModelScoreType,
         ATTRPG.[VALUE],
-        ATTRPG.[STARTDATE]
+        ATTRPG.[STARTDATE],
+        ATTRPG.[ENDDATE]                  -- NEW
     FROM dbo.ATTRIBUTEC14E96658FC544E0933F4DF1FA74CA6B ATTRPG
     INNER JOIN dbo.MODELINGANDPROPENSITY MP_PG
         ON ATTRPG.MODELINGANDPROPENSITYID = MP_PG.ID
     WHERE
         MP_PG.ID = @CONSTITUENTID
-        AND ATTRPG.ENDDATE IS NULL
 END
 
-			
+		]]>	
 		</CreateProcedureSQL>
 	</SPDataList>
 
@@ -81,6 +80,7 @@ END
 			<OutputField FieldID="ModelScoreType" Caption="Model Score Type" DataType="String" />
 			<OutputField FieldID="Value" Caption="Score" DataType="String" />
 			<OutputField FieldID="StartDate" Caption="Start Date" DataType="Date" />
+			<OutputField FieldID="EndDate" Caption="End Date" DataType="Date" />
 		</OutputFields>
 	</Output>
 
