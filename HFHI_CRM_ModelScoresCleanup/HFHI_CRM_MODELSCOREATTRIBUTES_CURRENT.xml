@@ -1,5 +1,6 @@
 ﻿<DataListSpec 
-	xmlns="bb_appfx_datalist" 
+	xmlns="bb_appfx_datalist"
+	xmlns:common="bb_appfx_commontypes"
 	ID="7aa495fb-d5a1-406b-b581-2900a33fab0c" 
 	Name="HFHI CRM MODELSCOREATTRIBUTES CURRENT Data List"
 	Description="A data list showing hfhi crm modelscoreattributes current records." 
@@ -8,73 +9,44 @@
 
 
 	<SPDataList SPName="USR_USP_DATALIST_HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT">
-		<CreateProcedureSQL  xmlns="bb_appfx_commontypes">
+		<CreateProcedureSQL xmlns="bb_appfx_commontypes">
 			<![CDATA[
 CREATE PROCEDURE dbo.USR_USP_DATALIST_HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT
-      @CONSTITUENTID UNIQUEIDENTIFIER
+(
+    @CONSTITUENTID uniqueidentifier
+)
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT
-        'ADMA - Propensity to Give' AS ModelScoreType,
-        ATTRADMA.[VALUE] AS [Value],
-        ATTRADMA.[STARTDATE] AS [StartDate],
-        ATTRADMA.[ENDDATE] AS [EndDate]   -- NEW
-    FROM dbo.ATTRIBUTED1DBE44C8F734152BDED6C3723A96873 ATTRADMA
-    INNER JOIN dbo.MODELINGANDPROPENSITY MP_ADMA
-        ON ATTRADMA.MODELINGANDPROPENSITYID = MP_ADMA.ID
-    WHERE
-        MP_ADMA.ID = @CONSTITUENTID
-
-    UNION ALL
-
-    SELECT
-        'SIMIO - Mid-Level Propensity' AS ModelScoreType,
-        ATTRMID.[VALUE],
-        ATTRMID.[STARTDATE],
-        ATTRMID.[ENDDATE]                 -- NEW
-    FROM dbo.ATTRIBUTE628D8C79C5354CDEBA04853FF4D1129C ATTRMID
-    INNER JOIN dbo.MODELINGANDPROPENSITY MP_MID
-        ON ATTRMID.MODELINGANDPROPENSITYID = MP_MID.ID
-    WHERE
-        MP_MID.ID = @CONSTITUENTID
-
-    UNION ALL
-
-    SELECT
-        'SIMIO - Net Worth Propensity' AS ModelScoreType,
-        NULL AS VALUE,                    -- placeholder as in your version
-        ATTRNW.[STARTDATE],
-        ATTRNW.[ENDDATE]                  -- NEW
-    FROM dbo.ATTRIBUTE992C22EE8AF24ABF8E6AEF796C9EFFBB ATTRNW
-    INNER JOIN dbo.MODELINGANDPROPENSITY MP_NW
-        ON ATTRNW.MODELINGANDPROPENSITYID = MP_NW.ID
-    WHERE
-        MP_NW.ID = @CONSTITUENTID
-
-    UNION ALL
-
-    SELECT
-        'SIMIO - Planned Giving Propensity' AS ModelScoreType,
-        ATTRPG.[VALUE],
-        ATTRPG.[STARTDATE],
-        ATTRPG.[ENDDATE]                  -- NEW
-    FROM dbo.ATTRIBUTEC14E96658FC544E0933F4DF1FA74CA6B ATTRPG
-    INNER JOIN dbo.MODELINGANDPROPENSITY MP_PG
-        ON ATTRPG.MODELINGANDPROPENSITYID = MP_PG.ID
-    WHERE
-        MP_PG.ID = @CONSTITUENTID
+    ;WITH RankedScores AS (
+        SELECT
+            s.ID,
+            s.NAME AS ModelScoreType,
+            s.SCORE AS [Value],
+            s.UPDATEDON AS StartDate,
+            NULL AS EndDate,   -- placeholder for dynamic end-dating logic
+            ROW_NUMBER() OVER (
+                PARTITION BY s.ANALYTICSMODELID
+                ORDER BY s.UPDATEDON DESC
+            ) AS RN
+        FROM dbo.UFN_MODELSCORESFORCONSTITUENT(@CONSTITUENTID) s
+    )
+    SELECT 
+        ModelScoreType,
+        [Value],
+        StartDate,
+        EndDate
+    FROM RankedScores
+    WHERE RN = 1   -- keep only the most recent score per model
+    ORDER BY ModelScoreType;
 END
-
-		]]>	
+            ]]>
 		</CreateProcedureSQL>
 	</SPDataList>
 
-	
 	<Context ContextRecordType="Constituent" RecordIDParameter="CONSTITUENTID" />
 
-	<!-- define the output fields in the list -->
 	<Output>
 		<OutputFields>
 			<OutputField FieldID="ModelScoreType" Caption="Model Score Type" DataType="String" />

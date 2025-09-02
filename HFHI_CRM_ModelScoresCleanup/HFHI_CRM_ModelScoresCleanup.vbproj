@@ -92,6 +92,12 @@
   <ItemGroup>
     <EmbeddedResource Include="HFHI_CRM_ModelScoresCU_PG.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HFHI_CRM_ModelScoresAndRatingsUpdate.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UFN_MODELSCORESFORCONSTITUENT_UPDATE.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

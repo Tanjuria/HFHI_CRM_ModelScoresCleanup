@@ -1,0 +1,54 @@
+﻿<DataListSpec
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    ID="5eebb5f1-0915-471a-9433-268a2cd8bfcb"
+    Name="HFHI CRM Model Scores And Ratings Update Data List"
+    Description="A data list showing hfhi crm modelscoresandratingsupdate records."
+    Author="HFHCON-DEV\twillis"
+    xmlns="bb_appfx_datalist"
+    xmlns:c="bb_appfx_commontypes"
+    >
+
+	<SPDataList SPName="USR_UFN_MODELSCORESFORCONSTITUENT_UPDATE">
+		<c:CreateProcedureSQL>
+			<![CDATA[
+             SELECT  
+        CAST(t.ANALYTICSMODELROWNUMBER AS INT) AS ANALYTICSMODELROWNUMBER,
+        t.ID AS ID,
+        t.NAME AS NAME,
+        CASE RTRIM(LTRIM(UPPER(t.SCORE)))
+            WHEN 'WORLD CHANGERS'   THEN '5'
+            WHEN 'MOVERS + SHAKERS' THEN '4'
+            WHEN 'STEADY SUPPORTERS' THEN '3'
+            WHEN 'CASUAL GIVERS'    THEN '2'
+            ELSE '0'
+        END AS SCORE,
+        CAST(t.MAXIMUMSCORE AS NVARCHAR(50)) AS MAXIMUMSCORE,
+        t.UPDATEDON AS UPDATEDON,
+        t.STARTDATE AS STARTDATE,
+        t.ENDDATE AS ENDDATE,
+        t.ANALYTICSMODELID AS ANALYTICSMODELID
+    FROM dbo.USR_UFN_MODELSCORESFORCONSTITUENT_UPDATE(@CONSTITUENTID) AS t
+            ]]>
+		</c:CreateProcedureSQL>
+	</SPDataList>
+
+	<!-- Context for constituent -->
+	<Context ContextRecordType="Constituent" RecordIDParameter="CONSTITUENTID" />
+
+	<!-- Output fields must exactly match TVF columns -->
+	<Output>
+		<OutputFields>
+			<OutputField FieldID="ANALYTICSMODELROWNUMBER" Caption="Row Number" DataType="Integer" IsHidden="true" />
+			<OutputField FieldID="ID" Caption="ID" DataType="Guid" IsHidden="true" />
+			<OutputField FieldID="NAME" Caption="Name" DataType="String" />
+			<OutputField FieldID="SCORE" Caption="Score" DataType="String" />
+			<OutputField FieldID="MAXIMUMSCORE" Caption="Maximum score" DataType="String" />
+			<OutputField FieldID="UPDATEDON" Caption="Updated On" DataType="Date" />
+			<OutputField FieldID="STARTDATE" Caption="Start Date" DataType="Date" />
+			<OutputField FieldID="ENDDATE" Caption="End Date" DataType="Date" />
+			<OutputField FieldID="ANALYTICSMODELID" Caption="Analytic Model ID" DataType="Guid" IsHidden="true" />
+		</OutputFields>
+	</Output>
+</DataListSpec>
+

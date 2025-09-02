@@ -59,6 +59,8 @@
 	<c:DependencyList>
         <c:Dependency CatalogAssembly="HFHI_CRM_ModelScoresCleanup.dll" CatalogItem="HFHI_CRM_ModelScoresCleanup.HFHI_CRM_MODELSCOREATTRIBUTES_CURRENT.xml" />
         <c:Dependency CatalogAssembly="HFHI_CRM_ModelScoresCleanup.dll" CatalogItem="HFHI_CRM_ModelScoresCleanup.HFHI_CRM_ModelScoreCU_v2.xml" />
-    </c:DependencyList>
+		<c:Dependency CatalogAssembly="HFHI_CRM_ModelScoresCleanup.dll" CatalogItem="HFHI_CRM_ModelScoresCleanup\HFHI_CRM_ModelScoresAndRatingsUpdate.xml" />
+		<c:Dependency CatalogAssembly="HFHI_CRM_ModelScoresCleanup.dll" CatalogItem="HFHI_CRM_ModelScoresCleanup\UFN_MODELSCORESFORCONSTITUENT_UPDATE.xml" />
+	</c:DependencyList>
 
 </PackageSpec>
