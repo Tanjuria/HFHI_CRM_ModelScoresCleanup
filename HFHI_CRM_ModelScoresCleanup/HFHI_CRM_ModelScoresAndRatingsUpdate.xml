@@ -12,24 +12,18 @@
 	<SPDataList SPName="USR_UFN_MODELSCORESFORCONSTITUENT_UPDATE">
 		<c:CreateProcedureSQL>
 			<![CDATA[
-             SELECT  
-        CAST(t.ANALYTICSMODELROWNUMBER AS INT) AS ANALYTICSMODELROWNUMBER,
-        t.ID AS ID,
-        t.NAME AS NAME,
-        CASE RTRIM(LTRIM(UPPER(t.SCORE)))
-            WHEN 'WORLD CHANGERS'   THEN '5'
-            WHEN 'MOVERS + SHAKERS' THEN '4'
-            WHEN 'STEADY SUPPORTERS' THEN '3'
-            WHEN 'CASUAL GIVERS'    THEN '2'
-            ELSE '0'
-        END AS SCORE,
-        CAST(t.MAXIMUMSCORE AS NVARCHAR(50)) AS MAXIMUMSCORE,
-        t.UPDATEDON AS UPDATEDON,
-        t.STARTDATE AS STARTDATE,
-        t.ENDDATE AS ENDDATE,
-        t.ANALYTICSMODELID AS ANALYTICSMODELID
-    FROM dbo.USR_UFN_MODELSCORESFORCONSTITUENT_UPDATE(@CONSTITUENTID) AS t
-            ]]>
+            SELECT  
+                t.ANALYTICSMODELROWNUMBER AS ANALYTICSMODELROWNUMBER,
+                t.ID AS ID,
+                t.NAME AS NAME,
+                t.SCORE AS SCORE,
+                t.MAXIMUMSCORE AS MAXIMUMSCORE,
+                t.UPDATEDON AS UPDATEDON,
+                t.STARTDATE AS STARTDATE,
+                t.ENDDATE AS ENDDATE,
+                t.ANALYTICSMODELID AS ANALYTICSMODELID
+            FROM dbo.USR_UFN_MODELSCORESFORCONSTITUENT_UPDATE(@CONSTITUENTID) AS t
+          ]]>
 		</c:CreateProcedureSQL>
 	</SPDataList>
 
@@ -51,4 +45,3 @@
 		</OutputFields>
 	</Output>
 </DataListSpec>
-
