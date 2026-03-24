@@ -1,103 +1,131 @@
 ﻿<DataListSpec
-    xmlns="bb_appfx_datalist"
-    xmlns:common="bb_appfx_commontypes"
-    ID="5eebb5f1-0915-471a-9433-268a2cd8bfcb"
-    Name="HFHI CRM Model Scores And Ratings Update Data List"
-    Description="A data list showing hfhi crm modelscoresandratingsupdate records."
-    Author="HFHCON-DEV\twillis">
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    ID="8f9c3c8e-2b6d-4d7a-9a4a-123456789abc"
+    Name="HFHI CRM Model Scores - Updated data List"
+    Description="Model scores with start and end dates for auditing and validation."
+    Author="HFHCON-DEV\twillis"
+    xmlns="bb_appfx_datalist">
 
-	<SPDataList SPName="USR_USP_DATALIST_HFHI_CRM_MODELSCORESFORCONSTITUENT_UPDATE">
-		<common:CreateProcedureSQL>
+	<SPDataList SPName="USR_USP_DATALIST_HFHI_CRM_MODELSCORES_AUDIT">
+
+		<CreateProcedureSQL xmlns="bb_appfx_commontypes">
 			<![CDATA[
-CREATE PROCEDURE dbo.USR_UFN_MODELSCORESFORCONSTITUENT_UPDATE
+
+
+
+CREATE PROCEDURE dbo.USR_USP_DATALIST_HFHI_CRM_MODELSCORES_AUDIT
 (
     @CONSTITUENTID UNIQUEIDENTIFIER
 )
-RETURNS TABLE
 AS
-RETURN
-(
+BEGIN
+    SET NOCOUNT ON;
+
     -- ADMA
     SELECT
         'ADMA' AS MODELSCORETYPE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
-        A.VALUE AS SCORE,
+        CAST(A.VALUE AS NVARCHAR(50)) AS SCORE,
         NULL AS MAXIMUMSCORE,
-        A.STARTDATE,
-        A.ENDDATE,
-        NULL AS NAME
+        A.STARTDATE AS STARTDATE,
+        A.ENDDATE AS ENDDATE,
+        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
+        'ADMA Score' AS NAME, 
+		NEWID() AS ID,
+        NULL AS DETAILVIEWFORMID,
+        NULL AS RECORDTYPEIDS,
+		 NEWID() AS ATTRIBUTEKEY
     FROM dbo.ATTRIBUTED1DBE44C8F734152BDED6C3723A96873 A
-    INNER JOIN dbo.MODELINGANDPROPENSITY M
-        ON A.MODELINGANDPROPENSITYID = M.ID
-    WHERE M.ID = @CONSTITUENTID
+    WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
     UNION ALL
 
     -- SIMIO Mid-Level
     SELECT
         'SIMIO - Mid Level' AS MODELSCORETYPE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
-        A.VALUE AS SCORE,
+        CAST(A.VALUE AS NVARCHAR(50)) AS SCORE,
         NULL AS MAXIMUMSCORE,
-        A.STARTDATE,
-        A.ENDDATE,
-        NULL AS NAME
+        A.STARTDATE AS STARTDATE,
+        A.ENDDATE AS ENDDATE,
+        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
+        'SIMIO Mid-Level Propensity' AS NAME,
+		NEWID() AS ID,
+        NULL AS DETAILVIEWFORMID,
+        NULL AS RECORDTYPEIDS,
+		NEWID() AS ATTRIBUTEKEY
     FROM dbo.ATTRIBUTE628D8C79C5354CDEBA04853FF4D1129C A
-    INNER JOIN dbo.MODELINGANDPROPENSITY M
-        ON A.MODELINGANDPROPENSITYID = M.ID
-    WHERE M.ID = @CONSTITUENTID
+    WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
     UNION ALL
 
     -- SIMIO Net Worth
     SELECT
         'SIMIO - Net Worth' AS MODELSCORETYPE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
         CAST(A.SIMIONETWORTHPROPENSITYCODEID AS NVARCHAR(50)) AS SCORE,
         NULL AS MAXIMUMSCORE,
-        A.STARTDATE,
-        A.ENDDATE,
-        NULL AS NAME
+        A.STARTDATE AS STARTDATE,
+        A.ENDDATE AS ENDDATE,
+        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
+        'SIMIO Net Worth Propensity' AS NAME,
+		NEWID() AS ID,
+        NULL AS DETAILVIEWFORMID,
+        NULL AS RECORDTYPEIDS,
+		NEWID() AS ATTRIBUTEKEY
     FROM dbo.ATTRIBUTE992C22EE8AF24ABF8E6AEF796C9EFFBB A
-    INNER JOIN dbo.MODELINGANDPROPENSITY M
-        ON A.MODELINGANDPROPENSITYID = M.ID
-    WHERE M.ID = @CONSTITUENTID
+    WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
     UNION ALL
 
     -- SIMIO Planned Giving
     SELECT
         'SIMIO - Planned Giving' AS MODELSCORETYPE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
-        A.VALUE AS SCORE,
+        CAST(A.VALUE AS NVARCHAR(50)) AS SCORE,
         NULL AS MAXIMUMSCORE,
-        A.STARTDATE,
-        A.ENDDATE,
-        NULL AS NAME
+        A.STARTDATE AS STARTDATE,
+        A.ENDDATE AS ENDDATE,
+        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
+        'SIMIO Planned Giving Propensity' AS NAME,
+		NEWID() AS ID,
+        NULL AS DETAILVIEWFORMID,
+        NULL AS RECORDTYPEIDS,
+		NEWID() AS ATTRIBUTEKEY
     FROM dbo.ATTRIBUTEC14E96658FC544E0933F4DF1FA74CA6B A
-    INNER JOIN dbo.MODELINGANDPROPENSITY M
-        ON A.MODELINGANDPROPENSITYID = M.ID
-    WHERE M.ID = @CONSTITUENTID
-);
+    WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
-      ]]>
-		</common:CreateProcedureSQL>
+    ORDER BY STARTDATE DESC;
+
+END
+
+]]>
+		</CreateProcedureSQL>
+
 	</SPDataList>
 
-	<!-- Context for constituent -->
+	<!-- Context -->
 	<Context ContextRecordType="Constituent" RecordIDParameter="CONSTITUENTID" />
 
-	<!-- Output fields must exactly match TVF columns -->
+	<!-- Output -->
 	<Output>
 		<OutputFields>
-			<OutputField FieldID="ANALYTICSMODELROWNUMBER" Caption="Row Number" DataType="Integer" IsHidden="true" />
-			<OutputField FieldID="ID" Caption="ID" DataType="Guid" IsHidden="true" />
-			<OutputField FieldID="NAME" Caption="Name" DataType="String" />
+			<OutputField FieldID="MODELSCORETYPE" Caption="Model Score Type" DataType="String">
+				<InstalledProductList xmlns="bb_appfx_commontypes">
+					<InstalledProduct ID="3117d2c8-7f46-42f2-abeb-b654f2f63046" />
+					<InstalledProduct ID="42c15648-749e-4859-a56d-3a6474814cc7" />
+					<InstalledProduct ID="bb9873d7-f1ed-430a-8ab4-f09f47056538" />
+					<InstalledProduct ID="f5ac53c4-d0ce-4e20-bca6-aacdfc01b302" />
+				</InstalledProductList>
+			</OutputField>
 			<OutputField FieldID="SCORE" Caption="Score" DataType="String" />
 			<OutputField FieldID="MAXIMUMSCORE" Caption="Maximum Score" DataType="String" />
 			<OutputField FieldID="STARTDATE" Caption="Start Date" DataType="Date" />
 			<OutputField FieldID="ENDDATE" Caption="End Date" DataType="Date" />
 			<OutputField FieldID="ANALYTICSMODELID" Caption="Analytic Model ID" DataType="Guid" IsHidden="true" />
+			<OutputField FieldID="NAME" Caption="Name" DataType="String" />
+			<OutputField FieldID="ID" Caption="ID" DataType="Guid" IsHidden="true" />
+			<OutputField FieldID="DETAILVIEWFORMID" Caption="Detail View Form ID" DataType="Guid" IsHidden="true" />
+			<OutputField FieldID="RECORDTYPEIDS" Caption="Record Type IDs" DataType="String" IsHidden="true" />
+			<OutputField FieldID="ATTRIBUTEKEY" Caption="Attribute Key" DataType="String" IsHidden="true" />
 		</OutputFields>
 	</Output>
+
 </DataListSpec>
