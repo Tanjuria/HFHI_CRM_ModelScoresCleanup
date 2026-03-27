@@ -2,19 +2,19 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     ID="8f9c3c8e-2b6d-4d7a-9a4a-123456789abc"
-    Name="HFHI CRM Model Scores - Updated data List"
+    Name="HFHI CRM Model Scores - Updated data List v2"
     Description="Model scores with start and end dates for auditing and validation."
     Author="HFHCON-DEV\twillis"
     xmlns="bb_appfx_datalist">
 
-	<SPDataList SPName="USR_USP_DATALIST_HFHI_CRM_MODELSCORES_AUDIT">
+	<SPDataList SPName="USR_USP_DATALIST_HFHI_CRM_MODELSCORESFORCONSTITUENT_UPDATEv2">
 
 		<CreateProcedureSQL xmlns="bb_appfx_commontypes">
 			<![CDATA[
 
 
 
-CREATE PROCEDURE dbo.USR_USP_DATALIST_HFHI_CRM_MODELSCORES_AUDIT
+CREATE PROCEDURE dbo.USR_USP_DATALIST_HFHI_CRM_MODELSCORESFORCONSTITUENT_UPDATEv2
 (
     @CONSTITUENTID UNIQUEIDENTIFIER
 )
@@ -22,74 +22,93 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    DECLARE @DetailFormID UNIQUEIDENTIFIER = 'F112C1DD-BEEA-477D-9D40-D849947AA1C9';
+    DECLARE @RecordTypeID UNIQUEIDENTIFIER = 'D6970D46-883C-4EC0-A09A-6BEEC981B951';
+
+    -----------------------------------------
     -- ADMA
+    -----------------------------------------
     SELECT
         'ADMA' AS MODELSCORETYPE,
         CAST(A.VALUE AS NVARCHAR(50)) AS SCORE,
         NULL AS MAXIMUMSCORE,
-        A.STARTDATE AS STARTDATE,
-        A.ENDDATE AS ENDDATE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
-        'ADMA Score' AS NAME, 
-		NEWID() AS ID,
-        NULL AS DETAILVIEWFORMID,
-        NULL AS RECORDTYPEIDS,
-		 NEWID() AS ATTRIBUTEKEY
+        A.STARTDATE,
+        A.ENDDATE,
+        M.ID AS ANALYTICSMODELID,
+        'ADMA Score' AS NAME,
+        M.ID AS ID,
+        @DetailFormID AS DETAILVIEWFORMID,
+        @RecordTypeID AS RECORDTYPEIDS,
+        A.ID AS ATTRIBUTEKEY
     FROM dbo.ATTRIBUTED1DBE44C8F734152BDED6C3723A96873 A
+    INNER JOIN dbo.MODELINGANDPROPENSITY M
+        ON A.MODELINGANDPROPENSITYID = M.ID
     WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
     UNION ALL
 
+    -----------------------------------------
     -- SIMIO Mid-Level
+    -----------------------------------------
     SELECT
-        'SIMIO - Mid Level' AS MODELSCORETYPE,
-        CAST(A.VALUE AS NVARCHAR(50)) AS SCORE,
-        NULL AS MAXIMUMSCORE,
-        A.STARTDATE AS STARTDATE,
-        A.ENDDATE AS ENDDATE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
-        'SIMIO Mid-Level Propensity' AS NAME,
-		NEWID() AS ID,
-        NULL AS DETAILVIEWFORMID,
-        NULL AS RECORDTYPEIDS,
-		NEWID() AS ATTRIBUTEKEY
+        'SIMIO - Mid Level',
+        CAST(A.VALUE AS NVARCHAR(50)),
+        NULL,
+        A.STARTDATE,
+        A.ENDDATE,
+        M.ID,
+        'SIMIO Mid-Level Propensity',
+        M.ID,
+        @DetailFormID,
+        @RecordTypeID,
+        A.ID
     FROM dbo.ATTRIBUTE628D8C79C5354CDEBA04853FF4D1129C A
+    INNER JOIN dbo.MODELINGANDPROPENSITY M
+        ON A.MODELINGANDPROPENSITYID = M.ID
     WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
     UNION ALL
 
+    -----------------------------------------
     -- SIMIO Net Worth
+    -----------------------------------------
     SELECT
-        'SIMIO - Net Worth' AS MODELSCORETYPE,
-        CAST(A.SIMIONETWORTHPROPENSITYCODEID AS NVARCHAR(50)) AS SCORE,
-        NULL AS MAXIMUMSCORE,
-        A.STARTDATE AS STARTDATE,
-        A.ENDDATE AS ENDDATE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
-        'SIMIO Net Worth Propensity' AS NAME,
-		NEWID() AS ID,
-        NULL AS DETAILVIEWFORMID,
-        NULL AS RECORDTYPEIDS,
-		NEWID() AS ATTRIBUTEKEY
+        'SIMIO - Net Worth',
+        CAST(A.SIMIONETWORTHPROPENSITYCODEID AS NVARCHAR(50)),
+        NULL,
+        A.STARTDATE,
+        A.ENDDATE,
+        M.ID,
+        'SIMIO Net Worth Propensity',
+        M.ID,
+        @DetailFormID,
+        @RecordTypeID,
+        A.ID
     FROM dbo.ATTRIBUTE992C22EE8AF24ABF8E6AEF796C9EFFBB A
+    INNER JOIN dbo.MODELINGANDPROPENSITY M
+        ON A.MODELINGANDPROPENSITYID = M.ID
     WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
     UNION ALL
 
+    -----------------------------------------
     -- SIMIO Planned Giving
+    -----------------------------------------
     SELECT
-        'SIMIO - Planned Giving' AS MODELSCORETYPE,
-        CAST(A.VALUE AS NVARCHAR(50)) AS SCORE,
-        NULL AS MAXIMUMSCORE,
-        A.STARTDATE AS STARTDATE,
-        A.ENDDATE AS ENDDATE,
-        A.MODELINGANDPROPENSITYID AS ANALYTICSMODELID,
-        'SIMIO Planned Giving Propensity' AS NAME,
-		NEWID() AS ID,
-        NULL AS DETAILVIEWFORMID,
-        NULL AS RECORDTYPEIDS,
-		NEWID() AS ATTRIBUTEKEY
+        'SIMIO - Planned Giving',
+        CAST(A.VALUE AS NVARCHAR(50)),
+        NULL,
+        A.STARTDATE,
+        A.ENDDATE,
+        M.ID,
+        'SIMIO Planned Giving Propensity',
+        M.ID,
+        @DetailFormID,
+        @RecordTypeID,
+        A.ID
     FROM dbo.ATTRIBUTEC14E96658FC544E0933F4DF1FA74CA6B A
+    INNER JOIN dbo.MODELINGANDPROPENSITY M
+        ON A.MODELINGANDPROPENSITYID = M.ID
     WHERE A.MODELINGANDPROPENSITYID = @CONSTITUENTID
 
     ORDER BY STARTDATE DESC;
@@ -97,35 +116,28 @@ BEGIN
 END
 
 ]]>
-		</CreateProcedureSQL>
+</CreateProcedureSQL>
 
-	</SPDataList>
+</SPDataList>
 
-	<!-- Context -->
-	<Context ContextRecordType="Constituent" RecordIDParameter="CONSTITUENTID" />
+<!-- Context -->
+<Context ContextRecordType="Constituent" RecordIDParameter="CONSTITUENTID" />
 
-	<!-- Output -->
-	<Output>
-		<OutputFields>
-			<OutputField FieldID="MODELSCORETYPE" Caption="Model Score Type" DataType="String">
-				<InstalledProductList xmlns="bb_appfx_commontypes">
-					<InstalledProduct ID="3117d2c8-7f46-42f2-abeb-b654f2f63046" />
-					<InstalledProduct ID="42c15648-749e-4859-a56d-3a6474814cc7" />
-					<InstalledProduct ID="bb9873d7-f1ed-430a-8ab4-f09f47056538" />
-					<InstalledProduct ID="f5ac53c4-d0ce-4e20-bca6-aacdfc01b302" />
-				</InstalledProductList>
-			</OutputField>
-			<OutputField FieldID="SCORE" Caption="Score" DataType="String" />
-			<OutputField FieldID="MAXIMUMSCORE" Caption="Maximum Score" DataType="String" />
-			<OutputField FieldID="STARTDATE" Caption="Start Date" DataType="Date" />
-			<OutputField FieldID="ENDDATE" Caption="End Date" DataType="Date" />
-			<OutputField FieldID="ANALYTICSMODELID" Caption="Analytic Model ID" DataType="Guid" IsHidden="true" />
-			<OutputField FieldID="NAME" Caption="Name" DataType="String" />
-			<OutputField FieldID="ID" Caption="ID" DataType="Guid" IsHidden="true" />
-			<OutputField FieldID="DETAILVIEWFORMID" Caption="Detail View Form ID" DataType="Guid" IsHidden="true" />
-			<OutputField FieldID="RECORDTYPEIDS" Caption="Record Type IDs" DataType="String" IsHidden="true" />
-			<OutputField FieldID="ATTRIBUTEKEY" Caption="Attribute Key" DataType="String" IsHidden="true" />
-		</OutputFields>
-	</Output>
+<!-- Output -->
+<Output>
+	<OutputFields>
+		<OutputField FieldID="MODELSCORETYPE" Caption="Model Score Type" DataType="String" />
+		<OutputField FieldID="SCORE" Caption="Score" DataType="String" />
+		<OutputField FieldID="MAXIMUMSCORE" Caption="Maximum Score" DataType="String" />
+		<OutputField FieldID="STARTDATE" Caption="Start Date" DataType="Date" />
+		<OutputField FieldID="ENDDATE" Caption="End Date" DataType="Date" />
+		<OutputField FieldID="ANALYTICSMODELID" Caption="Analytics Model ID" DataType="Guid" IsHidden="true" />
+		<OutputField FieldID="NAME" Caption="Name" DataType="String" />
+		<OutputField FieldID="ID" Caption="ID" DataType="Guid" IsHidden="true" />
+		<OutputField FieldID="DETAILVIEWFORMID" Caption="Detail View Form ID" DataType="Guid" IsHidden="true" />
+		<OutputField FieldID="RECORDTYPEIDS" Caption="Record Type IDs" DataType="Guid" IsHidden="true" />
+		<OutputField FieldID="ATTRIBUTEKEY" Caption="Attribute Key" DataType="Guid" IsHidden="true" />
+	</OutputFields>
+</Output>
 
 </DataListSpec>
